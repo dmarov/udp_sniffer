@@ -49,7 +49,6 @@ fn main() -> std::io::Result<()> {
         let payload = udp_pdu.payload();
         let content = &payload[24..];
 
-        println!("-----------------");
         println!("sniffed {:?}", content);
     }
 
