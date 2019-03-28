@@ -19,7 +19,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    let mut buf = [0; 10];
+    let mut buf = [0; 1000];
     buf[1] = 1;
     buf[2] = 2;
     buf[3] = 3;

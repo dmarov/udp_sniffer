@@ -34,7 +34,7 @@ fn main() -> std::io::Result<()> {
 
     let mut cap = Capture::from_device(device.as_str())
         .unwrap()
-        .buffer_size(30000)
+        .buffer_size(1000)
         .open()
         .unwrap();
 
@@ -47,8 +47,10 @@ fn main() -> std::io::Result<()> {
         let slice = vec.as_slice();
         let udp_pdu = UdpPacket::new(slice).unwrap();
         let payload = udp_pdu.payload();
+        let content = &payload[24..];
 
-        println!("sniffed {:?}", payload);
+        println!("-----------------");
+        println!("sniffed {:?}", content);
     }
 
     Ok(())
