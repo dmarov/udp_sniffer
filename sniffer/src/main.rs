@@ -1,9 +1,10 @@
 extern crate pnet;
+extern crate serde_json;
 
 use pcap::{ Capture, Device };
-
 use std::env;
 use pnet::packet::{ Packet, udp::UdpPacket, ethernet::EthernetPacket, ipv4::Ipv4Packet };
+use chrono::{ Local };
 
 fn main() -> std::io::Result<()> {
 
@@ -52,16 +53,21 @@ fn main() -> std::io::Result<()> {
             let ipv4_payload = ipv4_pdu.payload();
             let udp_pdu = UdpPacket::new(ipv4_payload).unwrap();
             let udp_payload = udp_pdu.payload();
+            let date = Local::now();
+            let time = date.format("%Y:%m:%d %H:%M:%S").to_string();
 
-            println!("{:?}", udp_pdu.get_source());
-            println!("{:?}", udp_pdu.get_destination());
-            println!("{:?}", udp_payload);
+            let json = serde_json::json!({
+                    "date": time,
+                    "source_mac": ethernet_pdu.get_source().to_string(),
+                    "destination_mac": ethernet_pdu.get_destination().to_string(),
+                    "source_ip": ipv4_pdu.get_source(),
+                    "destination_ip": ipv4_pdu.get_destination(),
+                    "source_port": udp_pdu.get_source(),
+                    "destination_port": udp_pdu.get_destination(),
+                    "payload": udp_payload,
+            }).to_string();
 
-            let s = String::from_utf8_lossy(udp_payload);
-            println!("{:?}", s);
-
-
-            // println!("{:?}", udp_pdu.get_length());
+            println!("{:?};", json);
             // println!("sniffed ethernet {:?}", ethernet_payload);
             // println!("sniffed udp {:?}", udp_payload);
             // println!("sniffed {:?}", content);
