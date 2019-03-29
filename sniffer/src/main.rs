@@ -68,7 +68,7 @@ fn main() -> std::io::Result<()> {
                     "payload": udp_payload,
             }).to_string();
 
-            println!("{:?};", json);
+            println!("{:?}", json);
         }
     }
 
