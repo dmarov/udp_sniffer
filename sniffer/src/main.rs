@@ -58,19 +58,17 @@ fn main() -> std::io::Result<()> {
 
             let json = serde_json::json!({
                     "date": time,
-                    "source_mac": ethernet_pdu.get_source().to_string(),
-                    "destination_mac": ethernet_pdu.get_destination().to_string(),
-                    "source_ip": ipv4_pdu.get_source(),
-                    "destination_ip": ipv4_pdu.get_destination(),
-                    "source_port": udp_pdu.get_source(),
-                    "destination_port": udp_pdu.get_destination(),
+                    "len": udp_payload.len(),
+                    // "source_mac": ethernet_pdu.get_source().to_string(),
+                    // "destination_mac": ethernet_pdu.get_destination().to_string(),
+                    // "source_ip": ipv4_pdu.get_source(),
+                    // "destination_ip": ipv4_pdu.get_destination(),
+                    // "source_port": udp_pdu.get_source(),
+                    // "destination_port": udp_pdu.get_destination(),
                     "payload": udp_payload,
             }).to_string();
 
             println!("{:?};", json);
-            // println!("sniffed ethernet {:?}", ethernet_payload);
-            // println!("sniffed udp {:?}", udp_payload);
-            // println!("sniffed {:?}", content);
         }
     }
 
