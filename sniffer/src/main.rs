@@ -2,9 +2,10 @@ extern crate pnet;
 extern crate serde_json;
 
 use pcap::{ Capture, Device };
-use std::env;
+use std::{ env, fs::File };
 use pnet::packet::{ Packet, udp::UdpPacket, ethernet::EthernetPacket, ipv4::Ipv4Packet };
 use chrono::{ Local };
+use std::io::prelude::*;
 
 fn main() -> std::io::Result<()> {
 
@@ -13,6 +14,7 @@ fn main() -> std::io::Result<()> {
 
     let mut filter = String::from("");
     let mut device = String::from("lo0");
+    let mut write_to = String::from("data.log");
 
     for i in 0..args.len() {
 
@@ -31,6 +33,10 @@ fn main() -> std::io::Result<()> {
         if String::from("--filter") == args[i] {
             filter = (args[i + 1]).clone();
         }
+
+        if String::from("--write-to") == args[i] {
+            write_to = (args[i + 1]).clone();
+        }
     }
 
     let mut cap = Capture::from_device(device.as_str())
@@ -41,6 +47,7 @@ fn main() -> std::io::Result<()> {
 
     cap.filter(filter.as_str())
         .unwrap();
+    let mut file = File::create(write_to)?;
 
     loop {
         while let Ok(packet) = cap.next() {
@@ -56,19 +63,15 @@ fn main() -> std::io::Result<()> {
             let date = Local::now();
             let time = date.format("%Y:%m:%d %H:%M:%S").to_string();
 
-            let json = serde_json::json!({
+            let mut json = serde_json::json!({
                     "date": time,
                     "len": udp_payload.len(),
-                    // "source_mac": ethernet_pdu.get_source().to_string(),
-                    // "destination_mac": ethernet_pdu.get_destination().to_string(),
-                    // "source_ip": ipv4_pdu.get_source(),
-                    // "destination_ip": ipv4_pdu.get_destination(),
-                    // "source_port": udp_pdu.get_source(),
-                    // "destination_port": udp_pdu.get_destination(),
                     "payload": udp_payload,
             }).to_string();
 
             println!("{:?}", json);
+            json.push_str("\r\n");
+            file.write_all(json.as_bytes())?;
         }
     }
 
