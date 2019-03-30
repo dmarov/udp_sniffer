@@ -1,4 +1,4 @@
 client/target
 server/target
 sniffer/target
-*.log
+#*.log
