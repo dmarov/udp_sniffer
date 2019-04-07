@@ -1,11 +1,13 @@
 extern crate pnet;
 extern crate serde_json;
+extern crate hex;
 
 use pcap::{ Capture, Device };
 use std::{ env, fs::File };
 use pnet::packet::{ Packet, udp::UdpPacket, ethernet::EthernetPacket, ipv4::Ipv4Packet };
 use chrono::{ Local };
 use std::io::prelude::*;
+use hex::ToHex;
 
 fn main() -> std::io::Result<()> {
 
@@ -62,11 +64,13 @@ fn main() -> std::io::Result<()> {
             let udp_payload = udp_pdu.payload();
             let date = Local::now();
             let time = date.format("%Y:%m:%d %H:%M:%S").to_string();
+            let mut hex_udp_payload = String::new();
+            udp_payload.write_hex(&mut hex_udp_payload).unwrap();
 
             let mut json = serde_json::json!({
                     "date": time,
                     "len": udp_payload.len(),
-                    "payload": udp_payload,
+                    "payload": hex_udp_payload,
             }).to_string();
 
             println!("{:?}", json);
