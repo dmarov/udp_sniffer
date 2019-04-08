@@ -65,12 +65,19 @@ fn main() -> std::io::Result<()> {
             let date = Local::now();
             let time = date.format("%Y:%m:%d %H:%M:%S").to_string();
             let mut hex_udp_payload = String::new();
-            udp_payload.write_hex(&mut hex_udp_payload).unwrap();
+
+            for byte in udp_payload.iter() {
+
+                hex_udp_payload.push_str((format!("{:02X}", byte)).as_str().chars().rev().collect::<String>().as_str());
+                hex_udp_payload.push_str("|");
+            }
+
+            // udp_payload.write_hex_upper(&mut hex_udp_payload).unwrap();
 
             let mut json = serde_json::json!({
                     "date": time,
-                    "len": udp_payload.len(),
                     "payload": hex_udp_payload,
+                    "len": udp_payload.len(),
             }).to_string();
 
             println!("{:?}", json);
