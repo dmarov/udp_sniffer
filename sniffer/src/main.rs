@@ -77,7 +77,7 @@ fn main() -> std::io::Result<()> {
             let mut json = serde_json::json!({
                     "date": time,
                     "payload": hex_udp_payload,
-                    "len": udp_payload.len(),
+                    // "len": udp_payload.len(),
             }).to_string();
 
             println!("{:?}", json);
